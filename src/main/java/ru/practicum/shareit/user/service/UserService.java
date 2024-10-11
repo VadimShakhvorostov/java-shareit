@@ -7,9 +7,9 @@ import ru.practicum.shareit.user.model.User;
 @Component
 public interface UserService {
 
-    UserDto save(User user);
+    UserDto save(UserDto user);
 
-    UserDto update(Long id, User userUpdate);
+    UserDto update(Long id, UserDto userUpdate);
 
     UserDto findById(Long id);
 

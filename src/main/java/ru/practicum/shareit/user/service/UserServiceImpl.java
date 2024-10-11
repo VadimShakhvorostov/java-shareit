@@ -12,16 +12,18 @@ import ru.practicum.shareit.user.repository.UserRepository;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
-    UserRepository userRepository;
+
+    private UserRepository userRepository;
 
     @Override
-    public UserDto save(User user) {
-        validationEmail(user.getEmail());
+    public UserDto save(UserDto userDto) {
+        validationEmail(userDto.getEmail());
+        User user = UserMapper.toUser(userDto);
         return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
-    public UserDto update(Long id, User userUpdate) {
+    public UserDto update(Long id, UserDto userUpdate) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
         if (userUpdate.getEmail() != null && userUpdate.getName() != null) {
             validationEmail(userUpdate.getEmail());

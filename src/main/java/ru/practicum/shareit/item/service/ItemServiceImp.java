@@ -8,6 +8,7 @@ import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.reposirory.ItemRepository;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -17,8 +18,8 @@ import java.util.Collection;
 @AllArgsConstructor
 @Slf4j
 public class ItemServiceImp implements ItemService {
-    ItemRepository itemRepository;
-    UserRepository userRepository;
+    private ItemRepository itemRepository;
+    private UserRepository userRepository;
 
     @Override
     public ItemDto findById(Long id) {
@@ -32,38 +33,39 @@ public class ItemServiceImp implements ItemService {
     }
 
     @Override
-    public Collection<ItemDto> search(String text, Long id) {
-        log.trace("search text: {} userId: {}", text, id);
+    public Collection<ItemDto> search(String text) {
+        log.trace("search text: {}", text);
         if (text.isBlank()) {
-            return new ArrayList<ItemDto>();
+            return new ArrayList<>();
         }
-        String searchText = text.toLowerCase();
+        final String searchText = text.toLowerCase();
         return itemRepository.search(searchText).stream().map(ItemMapper::toItemDto).toList();
     }
 
     @Override
-    public ItemDto update(Long id, Long userId, Item updateItem) {
+    public ItemDto update(Long id, Long userId, ItemDto itemDto) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new NotFoundException("Вещ с id: " + " не найдена"));
         if (item.getOwner().getId() != userId) {
             throw new NotFoundException("Пользователь с id: " + id + " не является владельцем");
         }
-        if (updateItem.getName() != null) {
-            item.setName(updateItem.getName());
+        if (itemDto.getName() != null) {
+            item.setName(itemDto.getName());
         }
-        if (updateItem.getDescription() != null) {
-            item.setDescription(updateItem.getDescription());
+        if (itemDto.getDescription() != null) {
+            item.setDescription(itemDto.getDescription());
         }
-        if (updateItem.getAvailable() != null) {
-            item.setAvailable(updateItem.getAvailable());
+        if (itemDto.getAvailable() != null) {
+            item.setAvailable(itemDto.getAvailable());
         }
 
         return ItemMapper.toItemDto(item);
     }
 
     @Override
-    public ItemDto save(Item item, Long id) {
-        log.trace("save item name: {}, description: {}, userId: {} ", item.getName(), item.getDescription(), id);
-        item.setOwner(userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден")));
+    public ItemDto save(ItemDto itemDto, Long id) {
+        log.trace("save item name: {}, description: {}, userId: {} ", itemDto.getName(), itemDto.getDescription(), id);
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
+        Item item = ItemMapper.toItem(itemDto, user);
         return ItemMapper.toItemDto(itemRepository.save(item));
     }
 }

@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.Collection;
@@ -14,19 +13,19 @@ import java.util.Collection;
 @AllArgsConstructor
 public class ItemController {
 
-    ItemService itemService;
+    private ItemService itemService;
 
     @PostMapping
-    public ItemDto saveItem(@Valid @RequestBody Item item, @RequestHeader("X-Sharer-User-Id") Long id) {
-        return itemService.save(item, id);
+    public ItemDto saveItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") Long id) {
+        return itemService.save(itemDto, id);
     }
 
     @PatchMapping("/{id}")
     public ItemDto updateItem(
             @PathVariable Long id,
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @RequestBody Item item) {
-        return itemService.update(id, userId, item);
+            @RequestBody ItemDto itemDto) {
+        return itemService.update(id, userId, itemDto);
     }
 
     @GetMapping("/{id}")
@@ -40,8 +39,8 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public Collection<ItemDto> search(@RequestParam String text, @RequestHeader("X-Sharer-User-Id") Long id) {
-        return itemService.search(text, id);
+    public Collection<ItemDto> search(@RequestParam String text) {
+        return itemService.search(text);
     }
 
 }
