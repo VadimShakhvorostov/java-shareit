@@ -8,14 +8,14 @@ import java.util.Collection;
 @Component
 public interface ItemService {
 
-    public ItemDto findById(Long id);
+    ItemDto findById(Long id);
 
-    public Collection<ItemDto> findAllByUser(Long id);
+    Collection<ItemDto> findAllByUser(Long id);
 
-    public Collection<ItemDto> search(String text);
+    Collection<ItemDto> search(String text);
 
-    public ItemDto update(Long id, Long userId, ItemDto itemDto);
+    ItemDto update(Long id, Long userId, ItemDto itemDto);
 
-    public ItemDto save(ItemDto itemDto, Long id);
+    ItemDto save(ItemDto itemDto, Long id);
 
 }
