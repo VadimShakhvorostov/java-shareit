@@ -6,7 +6,7 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 @Service
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new ValidationException("Нет данных для обновления");
         }
-        return UserMapper.toUserDto(userRepository.update(user));
+        return UserMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(Long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 
     private void validationEmail(String email) {

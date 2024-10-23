@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.Item;
 import ru.practicum.shareit.item.reposirory.ItemRepository;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class ItemServiceImp implements ItemService {
 
     @Override
     public Collection<ItemDto> findAllByUser(Long id) {
-        return itemRepository.findAllByUser(id).stream().map(ItemMapper::toItemDto).toList();
+        return itemRepository.findAllByOwnerId(id).stream().map(ItemMapper::toItemDto).toList();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ItemServiceImp implements ItemService {
             return new ArrayList<>();
         }
         final String searchText = text.toLowerCase();
-        return itemRepository.search(searchText).stream().map(ItemMapper::toItemDto).toList();
+        return itemRepository.findByNameContainingIgnoreCase(searchText).stream().map(ItemMapper::toItemDto).toList();
     }
 
     @Override
