@@ -3,7 +3,7 @@ package ru.practicum.shareit.booking.service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 
-import java.util.Collection;
+import java.util.List;
 
 public interface BookingService {
 
@@ -13,6 +13,8 @@ public interface BookingService {
 
     Booking getById(Long bookingId, Long userid);
 
-    Collection<Booking> getAll(Long userId);
+    List<Booking> getAllByBooker(Long userId, String state);
+
+    List<Booking> getAllByOwner(Long userId, String state);
 
 }

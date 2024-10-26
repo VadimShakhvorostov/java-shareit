@@ -14,14 +14,11 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("""
             select it
-            from Item it 
-            where (upper(it.name) like upper(concat('%', ?1, '%')) 
+            from Item it
+            where (upper(it.name) like upper(concat('%', ?1, '%'))
             or upper(it.description) like upper(concat('%', ?1, '%')))
-            and it.available = true            
-            """
-    )
+            and it.available = true
+            """)
     Collection<Item> search(String searchText);
-
-
 }
 

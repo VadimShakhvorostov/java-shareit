@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -11,6 +12,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
@@ -18,6 +20,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto save(UserDto userDto) {
+        log.trace("save user name = {}, email = {}", userDto.getName(), userDto.getEmail());
         validationEmail(userDto.getEmail());
         User user = userMapper.toUser(userDto);
         return userMapper.toUserDto(userRepository.save(user));

@@ -13,7 +13,9 @@ import ru.practicum.shareit.item.reposirory.ItemRepository;
 import ru.practicum.shareit.user.dto.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -83,7 +85,80 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Collection<Booking> getAll(Long userId) {
-        return bookingRepository.findBookingByBooker_Id(userId);
+    public List<Booking> getAllByBooker(Long userId, String state) {
+        log.trace("getAllByBooker user id = {}, status = {}", userId, state);
+        String upperState = state.toUpperCase();
+
+        List<Booking> bookingList = new ArrayList<>();
+
+        switch (upperState) {
+            case "ALL":
+                bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                break;
+            case "WAITING":
+            case "APPROVED":
+            case "REJECTED":
+            case "CANCELED":
+                String status = null;
+                for (Status s : Status.values()) {
+                    if (s.name().equals(state)) {
+                        status = s.name();
+                        break;
+                    }
+                }
+                bookingList = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, status);
+                break;
+            case "CURRENT":
+                bookingList = bookingRepository.findCurrentBookingsForBooker(userId, LocalDateTime.now());
+                break;
+            case "PAST":
+                bookingList = bookingRepository.findPastBookingsForBooker(userId, LocalDateTime.now());
+                break;
+            case "FUTURE":
+                bookingList = bookingRepository.findFutureBookingsForBooker(userId, LocalDateTime.now());
+                break;
+            default:
+                throw new NotFoundException("Неизвестный статус");
+        }
+        return bookingList;
+    }
+
+    @Override
+    public List<Booking> getAllByOwner(Long userId, String state) {
+        log.trace("getAllByOwner user id = {}, status = {}", userId, state);
+        String upperState = state.toUpperCase();
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+        List<Booking> bookingList = new ArrayList<>();
+
+        switch (upperState) {
+            case "ALL":
+                bookingList = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+                break;
+            case "WAITING":
+            case "APPROVED":
+            case "REJECTED":
+            case "CANCELED":
+                String status = null;
+                for (Status s : Status.values()) {
+                    if (s.name().equals(state)) {
+                        status = s.name();
+                        break;
+                    }
+                }
+                bookingList = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, status);
+                break;
+            case "CURRENT":
+                bookingList = bookingRepository.findCurrentBookingsForOwner(userId, LocalDateTime.now());
+                break;
+            case "PAST":
+                bookingList = bookingRepository.findPastBookingsForOwner(userId, LocalDateTime.now());
+                break;
+            case "FUTURE":
+                bookingList = bookingRepository.findFutureBookingsForOwner(userId, LocalDateTime.now());
+                break;
+            default:
+                throw new NotFoundException("Неизвестный статус");
+        }
+        return bookingList;
     }
 }

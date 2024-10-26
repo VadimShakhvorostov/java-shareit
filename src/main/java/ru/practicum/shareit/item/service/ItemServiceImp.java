@@ -39,12 +39,12 @@ public class ItemServiceImp implements ItemService {
     @Override
     public ItemDto findById(Long itemId) {
         log.trace("findById itemId = {}", itemId);
+
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещ с id: " + " не найдена"));
         ItemDto itemDto = itemMapper.toItemDto(item);
         itemDto.setComments(commentRepository.findAllByItem_Id(itemId));
 
         Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
-
         Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
 
         log.trace("findById nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
@@ -88,10 +88,7 @@ public class ItemServiceImp implements ItemService {
         if (itemDto.getAvailable() != null) {
             item.setAvailable(itemDto.getAvailable());
         }
-
-
         ItemDto itemDtoResponse = itemMapper.toItemDto(item);
-
         Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
         Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
 
@@ -114,7 +111,6 @@ public class ItemServiceImp implements ItemService {
         Item item = itemMapper.toItem(itemDto);
         item.setOwner(user);
         item.setRequest(itemRequest);
-
         return itemMapper.toItemDto(itemRepository.save(item));
     }
 
@@ -126,11 +122,11 @@ public class ItemServiceImp implements ItemService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
 
         if (bookingRepository
-                .findBookingByUserIdAndItemId(
+                .findBookingByUserIdAndItemIdRented(
                         user.getId(),
                         item.getId(),
                         LocalDateTime.now()).isEmpty()) {
-            throw new CommentException("User ");
+            throw new CommentException("User не брал вещь в аренду");
         }
 
         comment.setItem(item);

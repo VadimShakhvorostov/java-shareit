@@ -24,11 +24,11 @@ public class Comment {
     private String text;
 
     @ManyToOne
-    @JoinColumn (name = "author_id")
+    @JoinColumn(name = "author_id")
     private User author;
 
     @ManyToOne
-    @JoinColumn (name = "item_id")
+    @JoinColumn(name = "item_id")
     private Item item;
 
     private LocalDateTime created;

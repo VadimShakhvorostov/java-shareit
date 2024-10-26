@@ -33,7 +33,7 @@ create TABLE IF NOT EXISTS bookings (
   end_time TIMESTAMP WITHOUT TIME ZONE,
   item_id BIGINT REFERENCES items(id),
   booker_id BIGINT REFERENCES users(id),
-  status INTEGER,
+  status VARCHAR(25),
   CONSTRAINT pk_bookings PRIMARY KEY (id)
 );
 
