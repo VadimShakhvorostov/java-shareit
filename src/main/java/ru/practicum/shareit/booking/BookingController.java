@@ -39,9 +39,8 @@ public class BookingController {
     }
 
     @GetMapping
-    public Collection<Booking> getAll(@RequestHeader("X-Sharer-User-Id") Long userid){
+    public Collection<Booking> getAll(@RequestHeader("X-Sharer-User-Id") Long userid) {
         return bookingService.getAll(userid);
-
     }
 
 }
