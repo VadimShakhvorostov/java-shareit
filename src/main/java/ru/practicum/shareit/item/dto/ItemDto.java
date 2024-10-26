@@ -5,11 +5,16 @@ import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Comment;
+
+import java.util.Collection;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ItemDto {
+
     private long id;
 
     @NotBlank(message = ("name не может быть пустым"))
@@ -21,5 +26,8 @@ public class ItemDto {
     @NotNull(message = ("available не может быть пустым"))
     private Boolean available;
 
-    private Long request;
+    private Collection<Comment> comments;
+
+    private Booking lastBooking = new Booking();
+    private Booking nextBooking = new Booking();
 }

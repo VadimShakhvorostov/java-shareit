@@ -1,5 +1,4 @@
-package ru.practicum.shareit.item.dto;
-
+package ru.practicum.shareit.item.model;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +14,6 @@ import ru.practicum.shareit.user.dto.User;
 @Table(name = "items")
 public class Item {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -27,8 +25,10 @@ public class Item {
     private Boolean available;
 
     @ManyToOne
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @ManyToOne
+    @JoinColumn(name = "requests_id")
     private ItemRequest request;
 }
