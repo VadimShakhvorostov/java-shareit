@@ -58,7 +58,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking bookingApprove(Long bookingId, boolean bookingApprove, Long userid) {
 
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Вещь с id: " + bookingId + " не найдена"));
+        Booking booking = bookingRepository.findByIdAndItemOwnerId(bookingId, userid)
+                .orElseThrow(() -> new OwnerException("Не найдено bookingId: " + bookingId + " userId: " + userid));
         Item item = booking.getItem();
         User owner = item.getOwner();
 
@@ -75,7 +76,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Booking getById(Long bookingId, Long userid) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new NotFoundException("Вещь с id: " + bookingId + " не найдена"));
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new NotFoundException("Вещь с id: " + bookingId + " не найдена"));
         Item item = booking.getItem();
         User owner = item.getOwner();
         if (booking.getBooker().getId() != userid && owner.getId() != userid) {
@@ -85,13 +87,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getAllByBooker(Long userId, String state) {
+    public List<Booking> getAllByBooker(Long userId, Status state) {
         log.trace("getAllByBooker user id = {}, status = {}", userId, state);
-        String upperState = state.toUpperCase();
 
-        List<Booking> bookingList = new ArrayList<>();
+        List<Booking> bookingList;
 
-        switch (upperState) {
+        switch (state.name()) {
             case "ALL":
                 bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 break;
@@ -101,7 +102,7 @@ public class BookingServiceImpl implements BookingService {
             case "CANCELED":
                 String status = null;
                 for (Status s : Status.values()) {
-                    if (s.name().equals(state)) {
+                    if (s.equals(state)) {
                         status = s.name();
                         break;
                     }
@@ -124,13 +125,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getAllByOwner(Long userId, String state) {
+    public List<Booking> getAllByOwner(Long userId, Status state) {
         log.trace("getAllByOwner user id = {}, status = {}", userId, state);
-        String upperState = state.toUpperCase();
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
-        List<Booking> bookingList = new ArrayList<>();
 
-        switch (upperState) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+        List<Booking> bookingList;
+
+        switch (state.name()) {
             case "ALL":
                 bookingList = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
                 break;
@@ -140,7 +141,7 @@ public class BookingServiceImpl implements BookingService {
             case "CANCELED":
                 String status = null;
                 for (Status s : Status.values()) {
-                    if (s.name().equals(state)) {
+                    if (s.equals(state)) {
                         status = s.name();
                         break;
                     }

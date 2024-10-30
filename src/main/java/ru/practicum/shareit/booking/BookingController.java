@@ -14,7 +14,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class BookingController {
 
-    BookingService bookingService;
+    private BookingService bookingService;
 
     @PostMapping
     public Booking createBooking(
@@ -39,14 +39,14 @@ public class BookingController {
     }
 
     @GetMapping
-    public Collection<Booking> getAllBooker(@RequestHeader("X-Sharer-User-Id") Long userid,
-                                            @RequestParam(defaultValue = "all") String state) {
+    public Collection<Booking> getAllByBooker(@RequestHeader("X-Sharer-User-Id") Long userid,
+                                              @RequestParam(defaultValue = "ALL") Status state) {
         return bookingService.getAllByBooker(userid, state);
     }
 
     @GetMapping("/owner")
     public Collection<Booking> getAllByOwner(@RequestHeader("X-Sharer-User-Id") Long userid,
-                                             @RequestParam(defaultValue = "all") String state) {
+                                             @RequestParam(defaultValue = "ALL") Status state) {
         return bookingService.getAllByOwner(userid, state);
     }
 }

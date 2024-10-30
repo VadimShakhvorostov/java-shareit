@@ -59,6 +59,7 @@ public class ItemServiceImp implements ItemService {
 
     @Override
     public Collection<ItemDto> findAllItemByUser(Long userId) {
+        log.trace("findAllItemByUser userId = {}", userId);
         return itemRepository.findAllByOwnerId(userId).stream().map(itemMapper::toItemDto).toList();
     }
 
@@ -114,6 +115,7 @@ public class ItemServiceImp implements ItemService {
         return itemMapper.toItemDto(itemRepository.save(item));
     }
 
+    @Override
     public CommentDto createComment(Long itemId, Long userId, CommentDto commentDto) {
         log.trace("createComment itemId = {}, userId={}, commentDto = {}", itemId, userId, commentDto);
 
