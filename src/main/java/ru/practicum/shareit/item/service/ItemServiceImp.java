@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.service.BookingMapper;
 import ru.practicum.shareit.exception.CommentException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.CommentMapper;
@@ -36,6 +37,7 @@ public class ItemServiceImp implements ItemService {
     private CommentMapper commentMapper;
     private CommentRepository commentRepository;
     private BookingRepository bookingRepository;
+    BookingMapper bookingMapper;
 
     @Override
     public ItemDto findById(Long itemId) {
@@ -53,8 +55,8 @@ public class ItemServiceImp implements ItemService {
             Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
             Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
             log.trace("findById nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
-            itemDto.setLastBooking(lastBooking);
-            itemDto.setNextBooking(nextBooking);
+            itemDto.setLastBooking(bookingMapper.toBookingDto(lastBooking));
+            itemDto.setNextBooking(bookingMapper.toBookingDto(nextBooking));
             log.trace("findByIdAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
         }
         itemDto.setLastBooking(null);
@@ -96,16 +98,15 @@ public class ItemServiceImp implements ItemService {
             item.setAvailable(itemDto.getAvailable());
         }
         ItemDto itemDtoResponse = itemMapper.toItemDto(item);
-        Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
-        Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
 
-        log.trace("itemDtoUpdate nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
-
-        itemDto.setLastBooking(lastBooking);
-        itemDto.setNextBooking(nextBooking);
-
-        log.trace("itemDtoUpdateAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
-
+        if (bookingRepository.findByItemId(itemId).size() > 1) {
+            Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
+            Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
+            log.trace("itemDtoUpdate nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
+            itemDto.setLastBooking(bookingMapper.toBookingDto(lastBooking));
+            itemDto.setNextBooking(bookingMapper.toBookingDto(nextBooking));
+            log.trace("itemDtoUpdateAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
+        }
         return itemDtoResponse;
 
     }
