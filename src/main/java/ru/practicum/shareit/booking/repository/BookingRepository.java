@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
+    List<Booking> findByItemId(Long itemId);
+
     Optional<Booking> findByIdAndItemOwnerId(Long bookingId, Long userid);
 
     List<Booking> findAllByBookerIdOrderByStartDesc(Long userId);
@@ -66,7 +68,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             """
                     select bo
                     from Booking as bo
-                    where bo.booker.id = ?1 and bo.end < ?2
+                    where bo.item.id = ?1 and bo.end < ?2
                     order by bo.end
                     limit 1
                     """
@@ -78,7 +80,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             """
                     select bo
                     from Booking as bo
-                    where bo.booker.id = ?1 and bo.start > ?2
+                    where bo.item.id = ?1 and bo.start > ?2
                     order by bo.start
                     limit 1
                     """

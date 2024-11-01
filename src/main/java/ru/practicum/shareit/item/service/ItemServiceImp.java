@@ -23,6 +23,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -42,17 +43,22 @@ public class ItemServiceImp implements ItemService {
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещ с id: " + " не найдена"));
         ItemDto itemDto = itemMapper.toItemDto(item);
-        itemDto.setComments(commentRepository.findAllByItem_Id(itemId));
+        Set<Comment> comments = commentRepository.findAllByItem_Id(itemId);
+        log.trace("comments = {}", comments);
+        Set<CommentDto> commentDtos = commentMapper.toListCommentDto(comments);
+        log.trace("commentDtos = {}", commentDtos);
+        itemDto.setComments(commentDtos);
 
-        Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
-        Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
-
-        log.trace("findById nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
-
-        itemDto.setLastBooking(lastBooking);
-        itemDto.setNextBooking(nextBooking);
-
-        log.trace("findByIdAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
+        if (bookingRepository.findByItemId(itemId).size() > 1) {
+            Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
+            Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
+            log.trace("findById nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
+            itemDto.setLastBooking(lastBooking);
+            itemDto.setNextBooking(nextBooking);
+            log.trace("findByIdAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
+        }
+        itemDto.setLastBooking(null);
+        itemDto.setNextBooking(null);
 
         return itemDto;
     }

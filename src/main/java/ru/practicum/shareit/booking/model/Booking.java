@@ -36,5 +36,10 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "id=" + id +
+                '}';
+    }
 }

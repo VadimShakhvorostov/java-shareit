@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.model.Booking;
-import ru.practicum.shareit.item.model.Comment;
 
 import java.util.Set;
 
@@ -26,7 +25,7 @@ public class ItemDto {
     @NotNull(message = ("available не может быть пустым"))
     private Boolean available;
 
-    private Set<Comment> comments;
+    private Set<CommentDto> comments;
 
     private Booking lastBooking = new Booking();
     private Booking nextBooking = new Booking();

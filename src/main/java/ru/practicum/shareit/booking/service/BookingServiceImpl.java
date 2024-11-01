@@ -59,12 +59,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingRepository.findByIdAndItemOwnerId(bookingId, userid)
                 .orElseThrow(() -> new OwnerException("Не найдено bookingId: " + bookingId + " userId: " + userid));
-        Item item = booking.getItem();
-        User owner = item.getOwner();
 
-        if (owner.getId() != userid) {
-            throw new OwnerException("User не владелец");
-        }
         if (bookingApprove) {
             booking.setStatus(Status.APPROVED);
         } else {
@@ -91,14 +86,14 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookingList;
 
-        switch (state.name()) {
-            case "ALL":
+        switch (state) {
+            case ALL:
                 bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 break;
-            case "WAITING":
-            case "APPROVED":
-            case "REJECTED":
-            case "CANCELED":
+            case WAITING:
+            case APPROVED:
+            case REJECTED:
+            case CANCELED:
                 String status = null;
                 for (Status s : Status.values()) {
                     if (s.equals(state)) {
@@ -108,13 +103,13 @@ public class BookingServiceImpl implements BookingService {
                 }
                 bookingList = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, status);
                 break;
-            case "CURRENT":
+            case CURRENT:
                 bookingList = bookingRepository.findCurrentBookingsForBooker(userId, LocalDateTime.now());
                 break;
-            case "PAST":
+            case PAST:
                 bookingList = bookingRepository.findPastBookingsForBooker(userId, LocalDateTime.now());
                 break;
-            case "FUTURE":
+            case FUTURE:
                 bookingList = bookingRepository.findFutureBookingsForBooker(userId, LocalDateTime.now());
                 break;
             default:
@@ -130,14 +125,14 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
         List<Booking> bookingList;
 
-        switch (state.name()) {
-            case "ALL":
+        switch (state) {
+            case ALL:
                 bookingList = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
                 break;
-            case "WAITING":
-            case "APPROVED":
-            case "REJECTED":
-            case "CANCELED":
+            case WAITING:
+            case APPROVED:
+            case REJECTED:
+            case CANCELED:
                 String status = null;
                 for (Status s : Status.values()) {
                     if (s.equals(state)) {
@@ -147,13 +142,13 @@ public class BookingServiceImpl implements BookingService {
                 }
                 bookingList = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, status);
                 break;
-            case "CURRENT":
+            case CURRENT:
                 bookingList = bookingRepository.findCurrentBookingsForOwner(userId, LocalDateTime.now());
                 break;
-            case "PAST":
+            case PAST:
                 bookingList = bookingRepository.findPastBookingsForOwner(userId, LocalDateTime.now());
                 break;
-            case "FUTURE":
+            case FUTURE:
                 bookingList = bookingRepository.findFutureBookingsForOwner(userId, LocalDateTime.now());
                 break;
             default:
