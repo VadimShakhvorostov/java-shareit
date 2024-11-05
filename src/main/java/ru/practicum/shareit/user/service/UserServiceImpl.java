@@ -1,25 +1,29 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
+    private UserMapper userMapper;
 
     @Override
     public UserDto save(UserDto userDto) {
+        log.trace("save user name = {}, email = {}", userDto.getName(), userDto.getEmail());
         validationEmail(userDto.getEmail());
-        User user = UserMapper.toUser(userDto);
-        return UserMapper.toUserDto(userRepository.save(user));
+        User user = userMapper.toUser(userDto);
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
@@ -37,18 +41,18 @@ public class UserServiceImpl implements UserService {
         } else {
             throw new ValidationException("Нет данных для обновления");
         }
-        return UserMapper.toUserDto(userRepository.update(user));
+        return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto findById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
-        return UserMapper.toUserDto(user);
+        return userMapper.toUserDto(user);
     }
 
     @Override
     public void delete(Long id) {
-        userRepository.delete(id);
+        userRepository.deleteById(id);
     }
 
     private void validationEmail(String email) {

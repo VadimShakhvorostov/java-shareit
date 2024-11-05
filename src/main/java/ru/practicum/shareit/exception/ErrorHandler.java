@@ -1,5 +1,6 @@
 package ru.practicum.shareit.exception;
 
+import jakarta.validation.UnexpectedTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
@@ -52,5 +53,31 @@ public class ErrorHandler {
     public ExceptionRespons notFound(final MissingRequestHeaderException ex) {
         return new ExceptionRespons(ex.getHeaderName());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionRespons valid(final UnexpectedTypeException ex) {
+        return new ExceptionRespons(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionRespons dateException(final DateException ex) {
+        return new ExceptionRespons(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionRespons ownerException(final OwnerException ex) {
+        return new ExceptionRespons(ex.getMessage());
+    }
+
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionRespons commentException(final CommentException ex) {
+        return new ExceptionRespons(ex.getMessage());
+    }
+
 }
 

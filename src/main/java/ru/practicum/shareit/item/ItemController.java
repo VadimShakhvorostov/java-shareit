@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
@@ -35,7 +36,7 @@ public class ItemController {
 
     @GetMapping
     public Collection<ItemDto> findAllItemsByUser(@RequestHeader("X-Sharer-User-Id") Long id) {
-        return itemService.findAllByUser(id);
+        return itemService.findAllItemByUser(id);
     }
 
     @GetMapping("/search")
@@ -43,4 +44,11 @@ public class ItemController {
         return itemService.search(text);
     }
 
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(
+            @PathVariable Long itemId,
+            @RequestHeader("X-Sharer-User-Id") Long userId,
+            @RequestBody CommentDto commentDto) {
+        return itemService.createComment(itemId, userId, commentDto);
+    }
 }
