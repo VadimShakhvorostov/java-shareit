@@ -113,12 +113,20 @@ public class ItemServiceImp implements ItemService {
 
     @Override
     public ItemDto save(ItemDto itemDto, Long userId) {
-        log.trace("save item name: {}, description: {}, userId: {} ", itemDto.getName(), itemDto.getDescription(), userId);
+        log.trace("save item name: {}, description: {}, userId: {}, request_id: {} ", itemDto.getName(), itemDto.getDescription(), userId, itemDto.getRequestId());
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
-        ItemRequest itemRequest = itemRequestRepository.findById(user.getId()).orElse(null);
+        ItemRequest itemRequest;
+        try {
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElse(null);
+        } catch (Exception ex) {
+            itemRequest = null;
+        }
+
+
         Item item = itemMapper.toItem(itemDto);
         item.setOwner(user);
         item.setRequest(itemRequest);
+
         return itemMapper.toItemDto(itemRepository.save(item));
     }
 

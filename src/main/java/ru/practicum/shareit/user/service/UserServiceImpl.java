@@ -21,24 +21,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto save(UserDto userDto) {
         log.trace("save user name = {}, email = {}", userDto.getName(), userDto.getEmail());
+
+
+
         validationEmail(userDto.getEmail());
+
+
+
         User user = userMapper.toUser(userDto);
+
+
         return userMapper.toUserDto(userRepository.save(user));
     }
 
     @Override
     public UserDto update(Long id, UserDto userUpdate) {
+
+
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с id: " + id + " не найден"));
+
         if (userUpdate.getEmail() != null && userUpdate.getName() != null) {
-            validationEmail(userUpdate.getEmail());
+            validationEmail(userUpdate.getEmail(), id);
             user.setName(userUpdate.getName());
             user.setEmail(userUpdate.getEmail());
+
+
         } else if (userUpdate.getEmail() == null && userUpdate.getName() != null) {
             user.setName(userUpdate.getName());
+
+
         } else if (userUpdate.getEmail() != null) {
-            validationEmail(userUpdate.getEmail());
+            validationEmail(userUpdate.getEmail(), id);
             user.setEmail(userUpdate.getEmail());
         } else {
+
+
             throw new ValidationException("Нет данных для обновления");
         }
         return userMapper.toUserDto(userRepository.save(user));
@@ -55,9 +72,18 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    private void validationEmail(String email) {
-        if (userRepository.existsByEmail(email)) {
+    private void validationEmail(String email, long userId) {
+        if (userRepository.getUserByEmailAndId(email.toLowerCase(), userId).isPresent()) {
             throw new ValidationException("Пользователь с email: " + email + " уже существует");
         }
     }
+
+
+    private void validationEmail(String email) {
+        if (userRepository.existsByEmailIgnoreCase(email)) {
+            throw new ValidationException("Пользователь с email: " + email + " уже существует");
+        }
+    }
+
+
 }

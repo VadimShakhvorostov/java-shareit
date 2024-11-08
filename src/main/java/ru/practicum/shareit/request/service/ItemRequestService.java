@@ -11,11 +11,11 @@ public interface ItemRequestService {
 
     ItemRequestDto createItemRequest(ItemRequestDto itemRequestDto, long userId);
 
-    List<ItemRequestDto> getItemRequest(long userId);
+    List<ItemRequestDto> getItemRequestOwner(long userId);
 
-    List<ItemRequestDto> getAllItemRequests(long userId, PageRequest pageRequest);
+    List<ItemRequestDto> getAllItemRequestsAll(long userId, PageRequest pageRequest);
 
-    ItemRequestDto getItemRequestById(long id);
+    ItemRequestDto getItemRequestById(long requestId, long userId);
 
 
 }

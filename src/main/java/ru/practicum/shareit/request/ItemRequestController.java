@@ -1,7 +1,7 @@
 package ru.practicum.shareit.request;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.hibernate.query.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
@@ -18,14 +18,14 @@ public class ItemRequestController {
 
     @PostMapping
     public ItemRequestDto createItemRequest(
-            @RequestBody ItemRequestDto itemRequestDto,
+            @Valid @RequestBody ItemRequestDto itemRequestDto,
             @RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemRequestService.createItemRequest(itemRequestDto, userId);
     }
 
     @GetMapping
     public List<ItemRequestDto> getItemRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemRequestService.getItemRequest(userId);
+        return itemRequestService.getItemRequestOwner(userId);
     }
 
     @GetMapping("/all")
@@ -33,12 +33,14 @@ public class ItemRequestController {
             @RequestHeader("X-Sharer-User-Id") Long userId,
             @RequestParam(defaultValue = "0", required = false) int from,
             @RequestParam(defaultValue = "10", required = false) int size) {
-        return itemRequestService.getAllItemRequests(userId, PageRequest.of(from, size));
+        return itemRequestService.getAllItemRequestsAll(userId, PageRequest.of(from, size));
     }
 
-    @GetMapping
-    public ItemRequestDto getItemRequestById(@RequestParam("id") Long id) {
-        return itemRequestService.getItemRequestById(id);
+    @GetMapping("/{requestId}")
+    public ItemRequestDto getItemRequestById(
+            @PathVariable Long requestId,
+            @RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemRequestService.getItemRequestById(requestId, userId);
     }
 
 

@@ -29,4 +29,6 @@ public class ItemDto {
 
     private BookingDto lastBooking = new BookingDto();
     private BookingDto nextBooking = new BookingDto();
+
+    private Long requestId;
 }
