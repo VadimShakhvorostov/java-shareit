@@ -78,6 +78,5 @@ public class ErrorHandler {
     public ExceptionRespons commentException(final CommentException ex) {
         return new ExceptionRespons(ex.getMessage());
     }
-
 }
 

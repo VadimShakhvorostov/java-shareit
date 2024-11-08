@@ -30,8 +30,8 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking createBooking(BookingDto bookingDto, Long userId) {
         log.trace("create booking item_id: {}, start: {}, end: {} ", bookingDto.getItemId(), bookingDto.getStart(), bookingDto.getEnd());
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
-        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь с id: " + userId + " не найдена"));
+        User user = getUser(userId);
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() -> new NotFoundException("Вещь с id: " + bookingDto.getItemId() + " не найдена"));
 
         if (bookingDto.getStart().equals(bookingDto.getEnd()) ||
                 bookingDto.getEnd().isBefore(bookingDto.getStart()) ||
@@ -72,7 +72,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Booking getById(Long bookingId, Long userid) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new NotFoundException("Вещь с id: " + bookingId + " не найдена"));
+                .orElseThrow(() -> new NotFoundException("Бронирование с id: " + bookingId + " не найдена"));
         Item item = booking.getItem();
         User owner = item.getOwner();
         if (booking.getBooker().getId() != userid && owner.getId() != userid) {
@@ -85,7 +85,7 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getAllByBooker(Long userId, BookingState state) {
         log.trace("getAllByBooker user id = {}, status = {}", userId, state);
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+        getUser(userId);
 
         List<Booking> bookingList;
 
@@ -115,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getAllByOwner(Long userId, BookingState state) {
         log.trace("getAllByOwner user id = {}, status = {}", userId, state);
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
+        getUser(userId);
         List<Booking> bookingList;
 
         switch (state) {
@@ -138,5 +138,9 @@ public class BookingServiceImpl implements BookingService {
                 throw new NotFoundException("Неизвестный статус");
         }
         return bookingList;
+    }
+
+    private User getUser(long userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
     }
 }
