@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking;
 
-import jakarta.validation.constraints.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
