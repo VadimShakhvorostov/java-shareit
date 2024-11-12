@@ -1,0 +1,24 @@
+package ru.practicum.shareit.item.dto;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDto;
+
+import java.util.Set;
+
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+public class ItemDto {
+
+    private long id;
+    private String name;
+    private String description;
+    private Boolean available;
+    private Set<CommentDto> comments;
+    private BookingDto lastBooking = new BookingDto();
+    private BookingDto nextBooking = new BookingDto();
+    private Long requestId;
+}
