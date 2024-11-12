@@ -138,6 +138,7 @@ public class ItemServiceImp implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("Вещ с id: " + " не найдена"));
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь с id: " + userId + " не найден"));
 
+        log.trace("bookingRepository.findBookingByUserIdAndItemIdRented itemId = {}, userId={}, date = {}", itemId, userId, LocalDateTime.now());
         if (bookingRepository
                 .findBookingByUserIdAndItemIdRented(
                         user.getId(),
