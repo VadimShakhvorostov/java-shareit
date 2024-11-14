@@ -37,7 +37,7 @@ public class ItemServiceImp implements ItemService {
     private CommentMapper commentMapper;
     private CommentRepository commentRepository;
     private BookingRepository bookingRepository;
-    BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
 
     @Override
     public ItemDto findById(Long itemId) {
@@ -51,6 +51,9 @@ public class ItemServiceImp implements ItemService {
         log.trace("commentDtos = {}", commentDtos);
         itemDto.setComments(commentDtos);
 
+        itemDto.setLastBooking(null);
+        itemDto.setNextBooking(null);
+
         if (bookingRepository.findByItemId(itemId).size() > 1) {
             Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
             Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
@@ -59,8 +62,6 @@ public class ItemServiceImp implements ItemService {
             itemDto.setNextBooking(bookingMapper.toBookingDto(nextBooking));
             log.trace("findByIdAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
         }
-        itemDto.setLastBooking(null);
-        itemDto.setNextBooking(null);
 
         return itemDto;
     }

@@ -1,6 +1,5 @@
 package ru.practicum.shareit.request.service;
 
-import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,14 +23,14 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemRequestServiceImpl implements ItemRequestService {
 
-    ItemRequestRepository itemRequestRepository;
-    ItemRequestMapper itemRequestMapper;
+    private ItemRequestRepository itemRequestRepository;
+    private ItemRequestMapper itemRequestMapper;
     private ItemRepository itemRepository;
     private UserRepository userRepository;
     private ItemMapper itemMapper;
 
     @Override
-    public ItemRequestDto createItemRequest(@Valid ItemRequestDto itemRequestDto, long userId) {
+    public ItemRequestDto createItemRequest(ItemRequestDto itemRequestDto, long userId) {
         User user = getUser(userId);
         ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setRequestor(user);

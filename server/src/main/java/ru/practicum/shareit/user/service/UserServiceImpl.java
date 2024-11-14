@@ -22,14 +22,8 @@ public class UserServiceImpl implements UserService {
     public UserDto save(UserDto userDto) {
         log.trace("save user name = {}, email = {}", userDto.getName(), userDto.getEmail());
 
-
-
         validationEmail(userDto.getEmail());
-
-
-
         User user = userMapper.toUser(userDto);
-
 
         return userMapper.toUserDto(userRepository.save(user));
     }
