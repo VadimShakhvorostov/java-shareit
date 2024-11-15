@@ -100,6 +100,7 @@ public class ItemServiceImp implements ItemService {
         }
         ItemDto itemDtoResponse = itemMapper.toItemDto(item);
 
+        itemRepository.save(item);
         if (bookingRepository.findByItemId(itemId).size() > 1) {
             Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
             Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);

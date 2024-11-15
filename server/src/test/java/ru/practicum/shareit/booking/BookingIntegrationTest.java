@@ -18,6 +18,7 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -110,5 +111,37 @@ public class BookingIntegrationTest {
 
         assertNotNull(bookingApproved);
         assertEquals(Status.APPROVED, bookingApproved.getStatus());
+    }
+
+    @Test
+    void getAllByBookerTestAll() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.ALL);
+        assertEquals(1, result.size());
+    }
+
+    @Test
+    void getAllByBookerTestAllFuture() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().plusDays(1));
+        booking.setEnd(LocalDateTime.now().plusDays(2));
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.FUTURE);
+        assertEquals(1, result.size());
     }
 }
