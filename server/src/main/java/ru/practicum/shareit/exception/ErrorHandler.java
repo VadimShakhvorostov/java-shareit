@@ -78,5 +78,12 @@ public class ErrorHandler {
     public ExceptionRespons commentException(final CommentException ex) {
         return new ExceptionRespons(ex.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionRespons availableException(final AvailableException ex) {
+        return new ExceptionRespons(ex.getMessage());
+    }
+
 }
 
