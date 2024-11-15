@@ -105,8 +105,8 @@ public class ItemServiceImp implements ItemService {
             Booking lastBooking = bookingRepository.getLastBooking(itemId, LocalDateTime.now()).orElse(null);
             Booking nextBooking = bookingRepository.getNextBooking(itemId, LocalDateTime.now()).orElse(null);
             log.trace("itemDtoUpdate nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
-            itemDto.setLastBooking(bookingMapper.toBookingDto(lastBooking));
-            itemDto.setNextBooking(bookingMapper.toBookingDto(nextBooking));
+            itemDtoResponse.setLastBooking(bookingMapper.toBookingDto(lastBooking));
+            itemDtoResponse.setNextBooking(bookingMapper.toBookingDto(nextBooking));
             log.trace("itemDtoUpdateAfterSet nextBooking = {}, lastBooking = {}", nextBooking, lastBooking);
         }
         return itemDtoResponse;

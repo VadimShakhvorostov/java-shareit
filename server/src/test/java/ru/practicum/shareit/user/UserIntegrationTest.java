@@ -1,10 +1,13 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
@@ -99,4 +102,27 @@ public class UserIntegrationTest {
 
     }
 
+    @Test
+    public void findByIdFail() {
+        Assertions.assertThrows(NotFoundException.class, () -> userService.findById(1L));
+    }
+
+
+    @Test
+    public void updateSameEmailUser() {
+
+        UserDto userSave = userService.save(userRequest);
+
+        UserDto userDb = new UserDto();
+        userDb.setName("user-db");
+        userDb.setEmail("user-db@mail.ru");
+
+        userService.save(userDb);
+
+        UserDto userToUpdate = new UserDto();
+        userToUpdate.setEmail("user-db@mail.ru");
+
+        Assertions.assertThrows(ValidationException.class, () -> userService.update(userSave.getId(), userToUpdate));
+
+    }
 }

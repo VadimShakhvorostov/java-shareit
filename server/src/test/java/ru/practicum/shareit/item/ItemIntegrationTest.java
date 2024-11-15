@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
+import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -43,6 +44,8 @@ public class ItemIntegrationTest {
     private BookingServiceImpl bookingService;
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    BookingService bookingServiceImpl;
 
     UserDto user;
     UserDto owner;
@@ -208,4 +211,52 @@ public class ItemIntegrationTest {
         assertEquals(commentDto.getText(), result.getText());
         assertEquals(itemSaved.getId(), result.getItem().getId());
     }
+
+
+    @Test
+    void findByIdNextBookingTest() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().plusDays(1));
+        booking.setEnd(LocalDateTime.now().plusDays(2));
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        ItemDto result = itemService.findById(itemSaved.getId());
+
+        assertNotNull(result);
+        assertEquals(bookingFuture.getId(), result.getNextBooking().getId());
+    }
+
+    @Test
+    void updateNextBookingTest() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().plusDays(1));
+        booking.setEnd(LocalDateTime.now().plusDays(2));
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+
+        ItemDto itemUpdate = new ItemDto();
+        itemUpdate.setName("update");
+
+        ItemDto result = itemService.update(itemSaved.getId(), ownerSave.getId(), itemUpdate);
+
+        assertNotNull(result);
+        assertEquals(bookingFuture.getId(), result.getNextBooking().getId());
+    }
+
 }

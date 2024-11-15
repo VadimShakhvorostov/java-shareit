@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
+import ru.practicum.shareit.exception.DateException;
+import ru.practicum.shareit.exception.OwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.reposirory.ItemRepository;
 import ru.practicum.shareit.item.service.ItemService;
@@ -144,4 +147,63 @@ public class BookingIntegrationTest {
         List<Booking> result = bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.FUTURE);
         assertEquals(1, result.size());
     }
+
+    @Test
+    void getAllByBookerTestAllPast() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.PAST);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getById() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        Booking result = bookingServiceImpl.getById(bookingSave.getId(), userSave.getId());
+        assertEquals(bookingSave.getId(), result.getId());
+    }
+
+    @Test
+    void creteBookingFailDate() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStart(LocalDateTime.of(2024, 10, 10, 12, 0, 0));
+        booking.setEnd(LocalDateTime.of(2024, 10, 10, 12, 0, 0));
+        Assertions.assertThrows(DateException.class, () -> bookingServiceImpl.createBooking(booking, userSave.getId()));
+    }
+
+    @Test
+    void getByIdFailOwner() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        Assertions.assertThrows(OwnerException.class, () -> bookingServiceImpl.getById(bookingSave.getId(), 100L));
+    }
+
 }
