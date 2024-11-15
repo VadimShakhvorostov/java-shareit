@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
+import ru.practicum.shareit.exception.AvailableException;
 import ru.practicum.shareit.exception.DateException;
 import ru.practicum.shareit.exception.OwnerException;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -167,6 +168,26 @@ public class BookingIntegrationTest {
     }
 
     @Test
+    void getAllByBookerTestAllCurrent() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.CURRENT);
+        assertEquals(0, result.size());
+    }
+
+    @Test
     void getById() {
 
         UserDto userSave = userService.save(user);
@@ -204,6 +225,116 @@ public class BookingIntegrationTest {
         Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
 
         Assertions.assertThrows(OwnerException.class, () -> bookingServiceImpl.getById(bookingSave.getId(), 100L));
+    }
+
+    @Test
+    void getAllByOwnerTestAll() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByOwner(ownerSave.getId(), BookingState.ALL);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getAllByOwnerTestAllCurrent() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByOwner(ownerSave.getId(), BookingState.CURRENT);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAllByOwnerTestAllFuture() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByOwner(ownerSave.getId(), BookingState.CURRENT);
+        assertEquals(0, result.size());
+    }
+
+    @Test
+    void getAllByOwnerTestAllPast() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByOwner(ownerSave.getId(), BookingState.PAST);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void creteBookingFail() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        item.setAvailable(false);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+
+        Assertions.assertThrows(AvailableException.class, () -> bookingServiceImpl.createBooking(booking, userSave.getId()));
+    }
+
+
+    @Test
+    void bookingApproveRejected() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        Booking bookingApproved = bookingServiceImpl.bookingApprove(bookingSave.getId(), false, ownerSave.getId());
+
+        assertNotNull(bookingApproved);
+        assertEquals(Status.REJECTED, bookingApproved.getStatus());
     }
 
 }
