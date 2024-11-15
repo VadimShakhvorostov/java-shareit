@@ -188,6 +188,46 @@ public class BookingIntegrationTest {
     }
 
     @Test
+    void getAllByBookerTestAllWaiting() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.WAITING);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getAllByBookerTestFailState() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> bookingServiceImpl.getAllByBooker(userSave.getId(), BookingState.valueOf("AS")));
+
+    }
+
+    @Test
     void getById() {
 
         UserDto userSave = userService.save(user);
@@ -248,6 +288,46 @@ public class BookingIntegrationTest {
     }
 
     @Test
+    void getAllByOwnerTestAllWaiting() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByOwner(ownerSave.getId(), BookingState.WAITING);
+        assertEquals(2, result.size());
+    }
+
+    @Test
+    void getAllByOwnerTestAllFuture() {
+
+        UserDto userSave = userService.save(user);
+        UserDto ownerSave = userService.save(owner);
+        ItemDto itemSaved = itemService.save(item, ownerSave.getId());
+
+        booking.setItemId(itemSaved.getId());
+        booking.setStatus(Status.WAITING);
+        Booking bookingSave = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        booking.setStart(LocalDateTime.now().minusDays(2));
+        booking.setEnd(LocalDateTime.now().minusDays(1));
+        booking.setStatus(Status.WAITING);
+        Booking bookingFuture = bookingServiceImpl.createBooking(booking, userSave.getId());
+
+        List<Booking> result = bookingServiceImpl.getAllByOwner(ownerSave.getId(), BookingState.FUTURE);
+        assertEquals(0, result.size());
+    }
+
+    @Test
     void getAllByOwnerTestAllCurrent() {
 
         UserDto userSave = userService.save(user);
@@ -268,7 +348,7 @@ public class BookingIntegrationTest {
     }
 
     @Test
-    void getAllByOwnerTestAllFuture() {
+    void getAllByOwnerFutureTest() {
 
         UserDto userSave = userService.save(user);
         UserDto ownerSave = userService.save(owner);

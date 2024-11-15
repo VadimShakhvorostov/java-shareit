@@ -61,5 +61,4 @@ public class ErrorHandlerTest {
         ExceptionRespons exceptionRespons = errorHandler.commentException(new CommentException("message"));
         assertEquals(exceptionRespons.getError(), "message");
     }
-
 }

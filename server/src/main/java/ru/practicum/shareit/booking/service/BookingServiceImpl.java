@@ -97,7 +97,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
                 break;
             case WAITING, REJECTED:
-                bookingList = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, state);
+                bookingList = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.valueOf(state.name()));
                 break;
             case CURRENT:
                 bookingList = bookingRepository.findCurrentBookingsForBooker(userId, LocalDateTime.now());
@@ -126,7 +126,7 @@ public class BookingServiceImpl implements BookingService {
                 bookingList = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
                 break;
             case WAITING, REJECTED:
-                bookingList = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, state);
+                bookingList = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.valueOf(state.name()));
                 break;
             case CURRENT:
                 bookingList = bookingRepository.findCurrentBookingsForOwner(userId, LocalDateTime.now());

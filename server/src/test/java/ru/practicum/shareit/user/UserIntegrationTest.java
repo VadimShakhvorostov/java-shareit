@@ -12,6 +12,8 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -121,6 +123,38 @@ public class UserIntegrationTest {
 
         UserDto userToUpdate = new UserDto();
         userToUpdate.setEmail("user-db@mail.ru");
+
+        Assertions.assertThrows(ValidationException.class, () -> userService.update(userSave.getId(), userToUpdate));
+
+    }
+
+    @Test
+    public void deleteTest() {
+        userService.save(userRequest);
+
+        User user = userRepository.findAll().getFirst();
+
+        userService.delete(user.getId());
+
+        List<User> users = userRepository.findAll();
+
+        assertEquals(0, users.size());
+    }
+
+    @Test
+    public void updateUserFail() {
+
+        UserDto userSave = userService.save(userRequest);
+
+        UserDto userDb = new UserDto();
+        userDb.setName("user-db");
+        userDb.setEmail("user-db@mail.ru");
+
+        userService.save(userDb);
+
+        UserDto userToUpdate = new UserDto();
+        userToUpdate.setEmail(null);
+        userToUpdate.setName(null);
 
         Assertions.assertThrows(ValidationException.class, () -> userService.update(userSave.getId(), userToUpdate));
 
