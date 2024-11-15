@@ -61,4 +61,42 @@ public class UserIntegrationTest {
 
     }
 
+    @Test
+    public void updateEmailUser() {
+
+        UserDto userSave = userService.save(userRequest);
+
+        UserDto userToUpdate = new UserDto();
+        userToUpdate.setEmail("update@,ail.ru");
+
+
+        UserDto userUpdate = userService.update(userSave.getId(), userToUpdate);
+
+        User user = userRepository.findAll().getFirst();
+
+        assertEquals(user.getId(), userUpdate.getId());
+        assertEquals(user.getName(), userUpdate.getName());
+        assertEquals(user.getEmail(), userUpdate.getEmail());
+
+    }
+
+    @Test
+    public void updateNameUser() {
+
+        UserDto userSave = userService.save(userRequest);
+
+        UserDto userToUpdate = new UserDto();
+        userToUpdate.setName("update-name");
+
+
+        UserDto userUpdate = userService.update(userSave.getId(), userToUpdate);
+
+        User user = userRepository.findAll().getFirst();
+
+        assertEquals(user.getId(), userUpdate.getId());
+        assertEquals(user.getName(), userUpdate.getName());
+        assertEquals(user.getEmail(), userUpdate.getEmail());
+
+    }
+
 }
