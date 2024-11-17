@@ -11,7 +11,6 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.user.dto.UserDto;
 
-
 @Service
 @Slf4j
 public class UserClient extends BaseClient {
@@ -29,7 +28,6 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> saveUser(UserDto userDto) {
-        log.trace("USEEEEEEEEEEEEER");
         return post("", userDto);
     }
 

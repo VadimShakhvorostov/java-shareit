@@ -80,7 +80,7 @@ public class ItemRequestServiceTest {
         itemRequestResponse = new ItemRequest();
         itemRequestResponse.setId(TEST_REQUEST_ID);
         itemRequestResponse.setDescription("description-test");
-        itemRequestResponse.setRequestor(user);
+        itemRequestResponse.setRequester(user);
         itemRequestResponse.setCreated(created);
 
         itemDto = new ItemDto();
